@@ -3,7 +3,7 @@ const db = require("./../db");
 
 exports.getWhetherByCityName = async (req, res, next) => {
   try {
-    const { city } = req.body;
+    const { q:city } = req.query;
     const { data } = await axios.get(
       `http://api.weatherstack.com/current?access_key=${process.env.APPID}&query=${city}`
     );
@@ -45,7 +45,8 @@ exports.getWhetherByCityName = async (req, res, next) => {
       WeatherId: weatherId,
       LocationId: locationId,
     });
-    const result = await db.History.findAll({include:[{model:db.Location}, {model:db.Weather}], where:{LocationId:locationId}});    
+    const result = await db.History.findAll({include:[{model:db.Location}, {model:db.Weather}], where:{LocationId:locationId}, order: [
+      ['local_time', 'DESC']]});    
     res.status(200).json({
       status: "success",
       result
